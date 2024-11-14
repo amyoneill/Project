@@ -1,0 +1,37 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[RequireComponent(typeof(Rigidbody))]
+public class VehicleController : MonoBehaviour
+{
+    public float acceleration = 500f;
+    public float steering = 200f;
+    public float maxSpeed = 50f;
+
+    private Rigidbody rb;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    void FixedUpdate()
+    {
+        // Get player input
+        float moveInput = Input.GetAxis("Vertical");  // W/S or Up/Down arrow keys
+        float turnInput = Input.GetAxis("Horizontal");  // A/D or Left/Right arrow keys
+
+        // Apply forward/reverse force
+        Vector3 force = transform.forward * moveInput * acceleration * Time.deltaTime;
+        if (rb.velocity.magnitude < maxSpeed)
+        {
+            rb.AddForce(force, ForceMode.Acceleration);
+        }
+
+        // Apply steering torque
+        float turn = turnInput * steering * Time.deltaTime;
+        Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
+        rb.MoveRotation(rb.rotation * turnRotation);
+    }
+}
